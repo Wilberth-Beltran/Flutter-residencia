@@ -1,0 +1,2 @@
+C:/Users/wilcr/OneDrive/Documentos/Proyecto flutter/Flutter-residencia/android/app/.cxx/Debug/241g8122/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/wilcr/OneDrive/Documentos/Proyecto flutter/Flutter-residencia/android/app/.cxx/Debug/241g8122/x86_64/CMakeFiles/rebuild_cache.dir
