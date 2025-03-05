@@ -1,0 +1,94 @@
+{
+  "preguntas": {
+    "pregunta_1": {
+      "question": "How many whiskers does the average cat have on each side of its face?",
+      "answers": {
+        "1": false,
+        "3": false,
+        "12": true,
+        "5007": false
+      }
+    },
+    "pregunta_2": {
+      "question": "When does a cat purr?",
+      "answers": {
+        "When it cares for its kittens": false,
+        "When it needs comfort": false,
+        "When it feels content": false,
+        "All of the above": true
+      }
+    },
+    "pregunta_3": {
+      "question": "What is the average number of kittens in a litter?",
+      "answers": {
+        "1 to 2": false,
+        "3 to 5": true,
+        "8 to 10": false,
+        "12 to 14": false
+      }
+    },
+    "pregunta_4": {
+      "question": "How many moons does Mars have?",
+      "answers": {
+        "1": false,
+        "2": false,
+        "4": true,
+        "8": false
+      }
+    },
+    "pregunta_5": {
+      "question": "What is Mars's nickname?",
+      "answers": {
+        "The Red Planet": true,
+        "The Dusty Planet": false,
+        "The Hot Planet": false,
+        "The Smelly Planet": false
+      }
+    },
+    "pregunta_6": {
+      "question": "About how long would it take to travel to Mars?",
+      "answers": {
+        "Three days": false,
+        "A month": false,
+        "Eight months": true,
+        "Two years": false
+      }
+    },
+    "pregunta_7": {
+      "question": "Mars is named after the Roman god Mars. What is he the god of?",
+      "answers": {
+        "Fire": false,
+        "Love": false,
+        "Agriculture": false,
+        "War": true
+      }
+    },
+    "pregunta_8": {
+      "question": "Mars is the ___ planet from the sun?",
+      "answers": {
+        "Second": false,
+        "Third": false,
+        "Fourth": true,
+        "Sixth": false
+      }
+    },
+    "pregunta_9": {
+      "question": "Where did Orville and Wilbur Wright build their first flying airplane?",
+      "answers": {
+        "Paris, France": false,
+        "Boston, Massachusetts": false,
+        "Kitty Hawk, North Carolina": true,
+        "Tokyo, Japan": false
+      }
+    },
+    "pregunta_10": {
+      "question": "The first astronauts to travel to space came from which country?",
+      "answers": {
+        "United States": false,
+        "Soviet Union (now Russia)": true,
+        "China": false,
+        "Rocketonia": false
+      }
+    }
+  }
+}

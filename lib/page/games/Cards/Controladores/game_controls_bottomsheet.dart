@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../vista/Vista_cartas.dart';
-import '../Controladores/game_button.dart';
+import 'game_button.dart';
 import '../constantes/constants.dart';
 
 class GameControlsBottomSheet extends StatelessWidget {

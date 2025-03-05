@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screen/quizz_screen.dart';
+import 'quizz_screen.dart';
 import '../ui/shared/color.dart';
 
 class MainMenu extends StatefulWidget {

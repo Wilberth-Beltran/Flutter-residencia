@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/memory_match_page.dart';
-import '../Controladores/game_button.dart';
+import 'game_button.dart';
 import '../constantes/constants.dart';
 
 class GameOptions extends StatelessWidget {

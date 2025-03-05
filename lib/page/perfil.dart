@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'login/login.dart';
 import 'actualizar-datos.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PerfilScreen extends StatelessWidget {
   const PerfilScreen({super.key});
@@ -203,43 +204,49 @@ class PerfilScreen extends StatelessWidget {
 
                   // Botón de cerrar sesión
                   ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        // Cerrar sesión de Firebase
-                        await FirebaseAuth.instance.signOut();
+  onPressed: () async {
+    try {
+      // Cerrar sesión en Firebase
+      await FirebaseAuth.instance.signOut();
 
-                        // Cerrar sesión de Google si se utilizó para autenticarse
-                        final googleSignIn = GoogleSignIn();
-                        if (await googleSignIn.isSignedIn()) {
-                          await googleSignIn.signOut();
-                        }
+      // Cerrar sesión en Google si el usuario la usó
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.signOut();
+      }
 
-                        // Navegar a la pantalla de login
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
-                          (Route<dynamic> route) => false,
-                        );
+      // Borrar datos de sesión en SharedPreferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('isLoggedIn');
+      await prefs.remove('userId');
+      await prefs.remove('userRole');
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Cerraste sesión correctamente')),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error al cerrar sesión: $e')),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(fontSize: 16),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text('Cerrar sesión'),
-                  ),
+      // Navegar a la pantalla de login y eliminar historial
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (Route<dynamic> route) => false,
+      );
+
+      // Mostrar mensaje de confirmación
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cerraste sesión correctamente')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cerrar sesión: $e')),
+      );
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.red,
+    foregroundColor: Colors.white,
+    textStyle: const TextStyle(fontSize: 16),
+    minimumSize: const Size(double.infinity, 50),
+  ),
+  child: const Text('Cerrar sesión'),
+),
+
                 ],
               ),
             ),

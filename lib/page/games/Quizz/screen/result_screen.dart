@@ -18,10 +18,10 @@ class _ResultScreenState extends State<ResultScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: double.infinity,
             child: Text(
-              "Congratulations",
+              "FELICIDADES",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -30,25 +30,25 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 45.0,
           ),
-          Text(
-            "You Score is",
+          const Text(
+            "Tu record es:",
             style: TextStyle(color: Colors.white, fontSize: 34.0),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           Text(
             "${widget.score}",
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.orange,
               fontSize: 85.0,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 100.0,
           ),
           TextButton(
@@ -57,12 +57,12 @@ class _ResultScreenState extends State<ResultScreen> {
               Navigator.pop(context);
             },
             style: TextButton.styleFrom(
-              shape: StadiumBorder(),
+              shape: const StadiumBorder(),
               backgroundColor: AppColor.secondaryColor,
-              padding: EdgeInsets.all(18.0),
+              padding: const EdgeInsets.all(18.0),
             ),
-            child: Text(
-              "Repeat the quiz",
+            child: const Text(
+              "Repetir quiz",
               style: TextStyle(color: Colors.white),
             ),
           ),

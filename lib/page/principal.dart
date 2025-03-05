@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'inicio.dart';
 import 'perfil.dart';
 import 'novedades.dart';
+import '../page/games/games.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,15 +16,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? _user;
-  String _userName = '';
+  String userName = '';
   int _daysConnected = 0;
   int _selectedIndex = 0;
 
   // Lista de pantallas para cada sección del menú
   final List<Widget> _pages = [
     const Inicio(),    // Pantalla principal
-    NovedadesScreen(),      // Pantalla de Novedades
-    PerfilScreen(),       // Pantalla "Yo"
+    const GameScreen(),
+     NovedadesScreen(),      // Pantalla de Novedades
+    const PerfilScreen(),       // Pantalla "Yo"
   ];
 
   @override
@@ -42,20 +44,19 @@ class _HomePageState extends State<HomePage> {
       if (docSnapshot.exists) {
         setState(() {
           final data = docSnapshot.data();
-          _userName = data?['name'] ?? 'Usuario';
+           userName = data?['name'] ?? 'Usuario';
           _daysConnected = data?['daysConnected'] ?? 0;
         });
       }
     }
   }
 
-  final List<Widget> _icons = [
-    const Icon(Icons.home),
-    const Icon(Icons.new_releases),
-    const Icon(Icons.person),
+  final List<IconData> _icons = [
+    Icons.home,
+    Icons.gamepad,
+    Icons.new_releases,
+    Icons.person,
   ];
-
-  final List<String> _titles = ['Inicio', 'Novedades', 'Yo'];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -93,26 +94,23 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _pages[_selectedIndex],  // Aquí se muestra la pantalla según el índice seleccionado
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 67, 206, 230),
         padding: const EdgeInsets.all(20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(3, (index) {
+          children: List.generate(4, (index) {
+            bool isSelected = index == _selectedIndex;
             return GestureDetector(
               onTap: () => _onItemTapped(index),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Icon(
                   _icons[index],
-                  const SizedBox(height: 4),
-                  Text(
-                    _titles[index],
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: _selectedIndex == index ? FontWeight.bold : FontWeight.normal,
-                      color: _selectedIndex == index ? const Color.fromARGB(255, 114, 181, 245) : Colors.black,
-                    ),
+                  size: isSelected ? 40 : 25, // Aumenta el tamaño si está seleccionado
+                  color: isSelected ? Colors.white : Colors.black54, // Color blanco si está seleccionado
                   ),
+                  
                 ],
               ),
             );

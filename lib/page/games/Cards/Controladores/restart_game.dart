@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import '../vista/Vista_cartas.dart';
-import '../Controladores/game_controls_bottomsheet.dart';
+import 'game_controls_bottomsheet.dart';
 
 class RestartGame extends StatelessWidget {
   const RestartGame({

@@ -1,10 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'platoBuenComer.dart';
-import 'introduccion-biencomer.dart';
-import 'Cards/vista/Vista_cartas.dart';
-import 'Quizz/screen/main_menu.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Inicio extends StatefulWidget {
   const Inicio({Key? key}) : super(key: key);
@@ -18,24 +19,89 @@ class _InicioState extends State<Inicio> {
   User? _user;
   String _userName = '';
   int _daysConnected = 0;
+  List articles = [];
+  bool isLoading = true;
+  Timer? _timer; // Para ejecutar la API cada 30 minutos
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadNews();
+
+    // Configurar un temporizador para llamar a la API cada 30 minutos
+    _timer = Timer.periodic(const Duration(minutes: 30), (timer) {
+      fetchNews();
+    });
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancelar el temporizador al salir de la pantalla
+    super.dispose();
+  }
+
+  /// Cargar noticias desde SharedPreferences o la API si han pasado más de 30 minutos.
+  Future<void> _loadNews() async {
+    setState(() => isLoading = true);
+    final prefs = await SharedPreferences.getInstance();
+    final String? savedData = prefs.getString('newsData');
+    final int? lastFetchTime = prefs.getInt('lastFetchTime');
+    final int currentTime = DateTime.now().millisecondsSinceEpoch;
+
+    if (savedData != null && lastFetchTime != null && (currentTime - lastFetchTime) < (30 * 60 * 1000)) {
+      // Cargar datos desde SharedPreferences
+      setState(() {
+        articles = json.decode(savedData);
+        isLoading = false;
+      });
+    } else {
+      // Obtener nuevos datos de la API
+      await fetchNews();
+    }
+  }
+
+  /// Obtener noticias desde la API y guardarlas en SharedPreferences.
+  Future<void> fetchNews() async {
+    try {
+      print("🔄 Llamando a la API para obtener noticias...");
+      const String apiKey = 'pub_72267535ae0cff301e7db337e6a99c7511707';
+      const String apiUrl = 'https://newsdata.io/api/1/news?country=mx&category=health&apikey=';
+      final response = await http.get(Uri.parse(apiUrl + apiKey));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('results')) {
+          setState(() {
+            articles = data['results'];
+            isLoading = false;
+          });
+
+          // Guardar en SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('newsData', json.encode(articles));
+          await prefs.setInt('lastFetchTime', DateTime.now().millisecondsSinceEpoch);
+          print("✅ Noticias guardadas en SharedPreferences");
+        }
+      } else {
+        throw Exception('Error en la respuesta de la API');
+      }
+    } catch (e) {
+      print('❌ Error al obtener noticias: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+  /// Cargar datos del usuario desde Firebase Firestore
   Future<void> _loadUserData() async {
     try {
       _user = _auth.currentUser;
-
       if (_user != null) {
         final userDoc = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
         final docSnapshot = await userDoc.get();
-
         if (docSnapshot.exists) {
+          final data = docSnapshot.data();
           setState(() {
-            final data = docSnapshot.data();
             _userName = data?['name'] ?? 'Usuario';
             _daysConnected = data?['daysConnected'] ?? 0;
           });
@@ -46,324 +112,63 @@ class _InicioState extends State<Inicio> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RichText(
-              text: TextSpan(
-                style: const TextStyle(color: Colors.black),
-                children: [
-                  const TextSpan(
-                    text: 'Bienvenido\n',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  TextSpan(
-                    text: _userName,
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 30),
+  /// Función para abrir enlaces externos
+  void _openUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'No se pudo abrir el enlace: $url';
+    }
+  }
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Noticias de Salud en México')),
+      body: RefreshIndicator(
+        onRefresh: fetchNews, // Permite al usuario recargar noticias manualmente
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(), // Permite el gesto de recarga
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Primer botón con imagen
-                OutlinedButton(
-                  onPressed: () {
-                    _navigateToPlatoDelBuenComer(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    minimumSize: const Size(100, 130),
-                    backgroundColor: Color.fromARGB(255, 114, 181, 245), // Color de fondo
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    side: BorderSide.none
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 110, // Limita el tamaño máximo
-                      maxHeight: 110, // Limita el tamaño máximo
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/imagenes/platocm.png',
-                          width: 65,
-                          height: 65,
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Plato del bien comer',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-
-                // Segundo botón con imagen
-                OutlinedButton(
-                  onPressed: () {
-                    _navigateToPlatoDelBuenComer(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    backgroundColor: const Color.fromARGB(255, 114, 181, 245),
-                    minimumSize: const Size(100, 130),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    side: BorderSide.none
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 110, // Limita el tamaño máximo
-                      maxHeight: 110, // Limita el tamaño máximo
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/imagenes/plato_buen_comer.png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Plato del bien comer yucatan',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                isLoading
+                    ? const Center(child: CircularProgressIndicator()) // Indicador de carga mientras se obtienen datos
+                    : articles.isEmpty
+                        ? const Center(child: Text('No hay noticias disponibles.'))
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: articles.length,
+                            itemBuilder: (context, index) {
+                              var article = articles[index];
+                              return Card(
+                                margin: const EdgeInsets.all(10),
+                                child: ListTile(
+                                  leading: (article['image_url'] != null && Uri.parse(article['image_url']).isAbsolute)
+                                      ? Image.network(
+                                          article['image_url'],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return const Icon(Icons.broken_image, size: 50);
+                                          },
+                                        )
+                                      : const Icon(Icons.image, size: 50),
+                                  title: Text(article['title'] ?? 'Sin título', maxLines: 2, overflow: TextOverflow.ellipsis),
+                                  subtitle: Text(article['source_name'] ?? 'Fuente desconocida'),
+                                  onTap: () => _openUrl(article['link']),
+                                ),
+                              );
+                            },
+                          ),
               ],
             ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // Primer botón con imagen
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const VistaCartas()),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    backgroundColor: Color.fromARGB(255, 114, 181, 245),
-                    minimumSize: const Size(100, 130),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    side: BorderSide.none
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 110, // Limita el tamaño máximo
-                      maxHeight: 110, // Limita el tamaño máximo
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/imagenes/plato_buen_comer.png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Memoria de cartas',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Segundo botón con imagen
-                OutlinedButton(
-                  onPressed: () {
-                    _navigateToPlatoDelBuenComer(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    backgroundColor: Color.fromARGB(255, 114, 181, 245),
-                    minimumSize: const Size(100, 130),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    side: BorderSide.none
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 110, // Limita el tamaño máximo
-                      maxHeight: 110, // Limita el tamaño máximo
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/imagenes/plato_buen_comer.png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Adivina la palabra',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-                        Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // Primer botón con imagen
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainMenu()),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    backgroundColor: Color.fromARGB(255, 114, 181, 245),
-                    minimumSize: const Size(130, 130),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    side: BorderSide.none
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 110, // Limita el tamaño máximo
-                      maxHeight: 110, // Limita el tamaño máximo
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/imagenes/plato_buen_comer.png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Cuestionarios',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Segundo botón con imagen
-                OutlinedButton(
-                  onPressed: () {
-                    _navigateToPlatoDelBuenComer(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    backgroundColor: Color.fromARGB(255, 114, 181, 245),
-                    minimumSize: const Size(100, 130),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    side: BorderSide.none
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 110, // Limita el tamaño máximo
-                      maxHeight: 110, // Limita el tamaño máximo
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/imagenes/plato_buen_comer.png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          'Plato del bien comer',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
-}
-}
-
-void _navigateToPlatoDelBuenComer(BuildContext context) async {
-  final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-  final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
-  final docSnapshot = await userDoc.get();
-
-  final hasSeenIntro = docSnapshot.exists && docSnapshot.data()?['hasSeenIntro'] == true;
-
-  if (hasSeenIntro) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const PlatoDelBuenComerApp(),
-      ),
-    );
-  } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => IntroductionScreen(uid: uid),
       ),
     );
   }

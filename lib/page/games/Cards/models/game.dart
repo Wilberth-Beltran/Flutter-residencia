@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:buenos_habitos/page/Cards/constantes/icons.dart';
+import 'package:buenos_habitos/page/games/Cards/constantes/icons.dart';
 import 'package:flutter/material.dart';
-import './card_item.dart';
+import 'card_item.dart';
 
 class Game {
   Game(this.gridSize) {

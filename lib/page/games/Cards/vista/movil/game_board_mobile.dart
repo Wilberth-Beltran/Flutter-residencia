@@ -1,19 +1,15 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../models/game.dart';
 import '../../Controladores/game_confetti.dart';
-
 import '../../Controladores/memory_card.dart';
+import 'game_best_time_mobile.dart';
+import 'game_timer_mobile.dart';
 import '../../Controladores/restart_game.dart';
-import '../movilgrande/game_best_time.dart';
-import '../movilgrande/game_timer.dart';
 
-class GameBoard extends StatefulWidget {
-  const GameBoard({
+class GameBoardMobile extends StatefulWidget {
+  const GameBoardMobile({
     required this.gameLevel,
     super.key,
   });
@@ -21,10 +17,10 @@ class GameBoard extends StatefulWidget {
   final int gameLevel;
 
   @override
-  State<GameBoard> createState() => _GameBoardState();
+  State<GameBoardMobile> createState() => _GameBoardMobileState();
 }
 
-class _GameBoardState extends State<GameBoard> {
+class _GameBoardMobileState extends State<GameBoardMobile> {
   late Timer timer;
   late Game game;
   late Duration duration;
@@ -86,51 +82,48 @@ class _GameBoardState extends State<GameBoard> {
 
   @override
   Widget build(BuildContext context) {
-    final responsiveSpacing = sqrt(MediaQuery.of(context).size.width) *
-        sqrt(MediaQuery.of(context).size.height);
+    final aspectRatio = MediaQuery.of(context).size.aspectRatio;
 
-    return Stack(
-      children: [
-        GridView.count(
-          padding: const EdgeInsets.fromLTRB(8.0, 80.0, 8.0, 8.0),
-          childAspectRatio: MediaQuery.of(context).size.aspectRatio * 1.2,
-          mainAxisSpacing: responsiveSpacing / 100,
-          crossAxisSpacing: responsiveSpacing / 100,
-          crossAxisCount: game.gridSize,
-          children: List.generate(game.cards.length, (index) {
-            return MemoryCard(
-              index: index,
-              card: game.cards[index],
-              onCardPressed: game.onCardPressed,
-            );
-          }),
-        ),
-        Positioned(
-          top: 12.0,
-          right: 24.0,
-          child: RestartGame(
-            isGameOver: game.isGameOver,
-            pauseGame: () => pauseTimer(),
-            restartGame: () => _resetGame(),
-            continueGame: () => startTimer(),
+    return SafeArea(
+      child: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              RestartGame(
+                isGameOver: game.isGameOver,
+                pauseGame: () => pauseTimer(),
+                restartGame: () => _resetGame(),
+                continueGame: () => startTimer(),
+                color: Colors.amberAccent[700]!,
+              ),
+              GameTimerMobile(
+                time: duration,
+              ),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: game.gridSize,
+                  childAspectRatio: aspectRatio * 2,
+                  children: List.generate(game.cards.length, (index) {
+                    return MemoryCard(
+                      index: index,
+                      card: game.cards[index],
+                      onCardPressed: game.onCardPressed,
+                    );
+                  }),
+                ),
+              ),
+              GameBestTimeMobile(
+                bestTime: bestTime,
+              ),
+            ],
           ),
-        ),
-        Positioned(
-          bottom: 12.0,
-          right: 24.0,
-          child: GameTimer(
-            time: duration,
-          ),
-        ),
-        Positioned(
-          bottom: 12.0,
-          left: 24.0,
-          child: GameBestTime(
-            bestTime: bestTime,
-          ),
-        ),
-        showConfetti ? const GameConfetti() : const SizedBox(),
-      ],
+          showConfetti ? const GameConfetti() : const SizedBox(),
+        ],
+      ),
     );
   }
 }

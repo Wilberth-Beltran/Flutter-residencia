@@ -7,6 +7,8 @@ import 'confirmacion-login.dart';
 import '../recuperarContrasena.dart';
 import 'registrar.dart';
 import 'package:intl/intl.dart'; // Para formatear la fecha
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 class LoginScreen extends StatefulWidget {
@@ -59,16 +61,20 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 
-  Future<void> _checkUserRole(User user) async {
+ Future<void> _checkUserRole(User user) async {
   final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
   final userDoc = await userRef.get();
 
-  if (!mounted) return; // Asegúrate de que el widget esté montado
+  if (!mounted) return;
 
   if (userDoc.exists) {
-    String role = userDoc.data()?['role'] ?? 'usuario'; // Por defecto 'usuario' si no está definido.
+    String role = userDoc.data()?['role'] ?? 'usuario'; // Si no está definido, se asigna "usuario".
 
-    // Dependiendo del rol, redirige a la interfaz correspondiente
+    // Guardamos el rol en SharedPreferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userRole', role);
+
+    // Redirigir según el rol
     if (role == 'admin') {
       Navigator.pushReplacement(
         context,
@@ -81,13 +87,17 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   } else {
-    // Si no existe el documento, redirige a la pantalla de confirmación
+    // Si el documento del usuario no existe, asignar rol por defecto y redirigir
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userRole', 'usuario');
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const ConfirmationScreen()),
     );
   }
 }
+
 
 Future<void> signInWithGoogle() async {
   try {
@@ -101,6 +111,10 @@ Future<void> signInWithGoogle() async {
     );
 
     final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userId', userCredential.user!.uid);
 
     // Referencia al documento del usuario en Firestore
     final userRef = FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid);
@@ -139,9 +153,6 @@ Future<void> signInWithGoogle() async {
 }
 
 
-
-
-
 Future<void> signInWithEmailAndPassword() async {
   if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -164,11 +175,12 @@ Future<void> signInWithEmailAndPassword() async {
       password: _passwordController.text.trim(),
     );
 
-    // Incrementar 'daysConnected' después del inicio de sesión exitoso
-    await _incrementDaysConnected(userCredential.user!);
-
-    // Verificar el rol del usuario y redirigir a la interfaz correspondiente
-    if (!mounted) return; // Asegúrate de que el widget esté montado
+    // Guardar la sesión localmente
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userId', userCredential.user!.uid);
+    
+    if (!mounted) return;
     await _checkUserRole(userCredential.user!);
 
   } on FirebaseAuthException catch (e) {
@@ -186,6 +198,7 @@ Future<void> signInWithEmailAndPassword() async {
     }
   }
 }
+
 
 
 
