@@ -143,14 +143,14 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
               children: [
                 Image.asset(
                   'assets/imagenes/icono-app.png',
-                  width: 100,
-                  height: 100,
+                  width: 70,
+                  height: 70,
                 ),
                 const SizedBox(width: 16),
                 const Text(
                   'REGISTRAR',
                   style: TextStyle(
-                    fontSize: 40,
+                    fontSize: 30,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
@@ -159,7 +159,7 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
             ),
             centerTitle: true,
             toolbarHeight: 100,
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: true,
           ),
         ),
       ),
@@ -207,20 +207,20 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                       labelText: 'Nombre',
                       prefixIcon: const Icon(Icons.person),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.black,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.blue,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                     ),
@@ -236,20 +236,20 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                       labelText: 'Edad',
                       prefixIcon: const Icon(Icons.cake),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.black,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.blue,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                     ),
@@ -267,20 +267,20 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.person_outline),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(5.0),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32.0),
+                            borderRadius: BorderRadius.circular(15.0),
                             borderSide: const BorderSide(
                               color: Colors.black,
-                              width: 4.0,
+                              width: 2.5,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32.0),
+                            borderRadius: BorderRadius.circular(15.0),
                             borderSide: const BorderSide(
                               color: Colors.blue,
-                              width: 4.0,
+                              width: 2.5,
                             ),
                           ),
                         ),
@@ -310,21 +310,21 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                       labelText: 'Peso Inicial',
                       prefixIcon: const Icon(Icons.fitness_center),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                       enabled: weightInitial == 0, // No editable si ya tiene valor
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.black,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.blue,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                     ),
@@ -340,20 +340,20 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                       labelText: 'Peso Actual',
                       prefixIcon: const Icon(Icons.fitness_center),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.black,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.blue,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                     ),
@@ -369,20 +369,20 @@ class _EditPerfilScreenState extends State<EditPerfilScreen> {
                       labelText: 'Nivel de Glucosa',
                       prefixIcon: const Icon(Icons.local_hospital),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.black,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         borderSide: const BorderSide(
                           color: Colors.blue,
-                          width: 4.0,
+                          width: 2.5,
                         ),
                       ),
                     ),

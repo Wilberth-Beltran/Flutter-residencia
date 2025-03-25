@@ -8,6 +8,7 @@ import '../recuperarContrasena.dart';
 import 'registrar.dart';
 import 'package:intl/intl.dart'; // Para formatear la fecha
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 
@@ -22,12 +23,29 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  
+
 
   @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();  // Llamamos a la función que pide el permiso
+  }
+
+   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.request();
+    if (status.isGranted) {
+      print("Permiso de notificación concedido");
+    } else {
+      print("Permiso de notificación denegado");
+    }
   }
 
   // Incrementar el campo 'daysConnected' solo una vez por día

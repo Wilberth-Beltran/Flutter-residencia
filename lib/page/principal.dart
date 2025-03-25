@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'inicio.dart';
 import 'perfil.dart';
 import 'novedades.dart';
 import '../page/games/games.dart';
+import 'Calendario/Vista_principal.dart';
+import 'page1_icons/home_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,9 +23,10 @@ class _HomePageState extends State<HomePage> {
 
   // Lista de pantallas para cada sección del menú
   final List<Widget> _pages = [
-    const Inicio(),    // Pantalla principal
+    const Home_Page(),   // Pantalla principal
     const GameScreen(),
-     NovedadesScreen(),      // Pantalla de Novedades
+    NovedadesScreen(),      // Pantalla de Novedades
+    const CalendaryState(),    // Pantalla de perfil
     const PerfilScreen(),       // Pantalla "Yo"
   ];
 
@@ -55,6 +57,7 @@ class _HomePageState extends State<HomePage> {
     Icons.home,
     Icons.gamepad,
     Icons.new_releases,
+    Icons.calendar_today,
     Icons.person,
   ];
 
@@ -67,41 +70,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(130.0),
-        child: Container(
-          margin: const EdgeInsets.only(top: 25),
-          child: AppBar(
-            title: Row(
-              children: [
-                Image.asset('assets/imagenes/icono-app.png', width: 100, height: 100),
-                const Spacer(),
-                Row(
-                  children: [
-                    Image.asset('assets/imagenes/fuego.png', width: 50, height: 50),
-                    const SizedBox(width: 4),
-                    Text('$_daysConnected', style: const TextStyle(color: Colors.black)),
-                  ],
-                ),
-              ],
-            ),
-            centerTitle: true,
-            toolbarHeight: 80,
-            automaticallyImplyLeading: false,
-            backgroundColor: const Color.fromARGB(255, 114, 181, 245),
-          ),
-        ),
-      ),
       body: _pages[_selectedIndex],  // Aquí se muestra la pantalla según el índice seleccionado
       bottomNavigationBar: Container(
-        color: const Color.fromARGB(255, 67, 206, 230),
-        padding: const EdgeInsets.all(20.0),
+      color: Theme.of(context).bottomNavigationBarTheme.backgroundColor, // ✅ Se adapta al tema  
+      padding: const EdgeInsets.all(12.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(4, (index) {
+          children: List.generate(5, (index) {
             bool isSelected = index == _selectedIndex;
             return GestureDetector(
-              onTap: () => _onItemTapped(index),
+                onTap: () => _onItemTapped(index),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

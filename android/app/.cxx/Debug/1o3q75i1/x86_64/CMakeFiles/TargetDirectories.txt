@@ -1,0 +1,2 @@
+C:/Users/wilcr/OneDrive/Documentos/residencia-2025/Flutter-residencia/android/app/.cxx/Debug/1o3q75i1/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/wilcr/OneDrive/Documentos/residencia-2025/Flutter-residencia/android/app/.cxx/Debug/1o3q75i1/x86_64/CMakeFiles/rebuild_cache.dir

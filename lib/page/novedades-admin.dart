@@ -20,7 +20,7 @@ class _AltaNovedadScreenState extends State<AltaNovedadScreen> {
     // Validamos que la URL no esté vacía
     if (_mediaUrl == null || _mediaUrl!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor, ingresa una URL válida.')),
+        const SnackBar(content: Text('Por favor, ingresa una URL válida.')),
       );
       return;
     }
@@ -41,7 +41,7 @@ class _AltaNovedadScreenState extends State<AltaNovedadScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Novedad agregada exitosamente')),
+      const SnackBar(content: Text('Novedad agregada exitosamente')),
     );
   }
 
@@ -123,7 +123,7 @@ class _AltaNovedadScreenState extends State<AltaNovedadScreen> {
               ),
               const SizedBox(height: 30),
               // Dropdown para seleccionar el tipo de novedad
-              Container(
+              SizedBox(
                 width: double
                     .infinity, // Permite que el Dropdown ocupe todo el ancho disponible
                 child: DropdownButtonFormField<String>(
@@ -208,7 +208,7 @@ class _AltaNovedadScreenState extends State<AltaNovedadScreen> {
                   foregroundColor: Colors.white,
                   textStyle: const TextStyle(fontSize: 16),
                   minimumSize:
-                      Size(double.infinity, 50),
+                      const Size(double.infinity, 50),
                 ),
               ),
             ],

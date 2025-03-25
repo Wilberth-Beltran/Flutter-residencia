@@ -56,7 +56,6 @@ void _navigateToPlatoDelBuenComer(BuildContext context) async {
    @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         title: const Text('Aprende Jugando'),
         centerTitle: true,
@@ -67,7 +66,7 @@ void _navigateToPlatoDelBuenComer(BuildContext context) async {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 2),
+              const SizedBox(height: 85),
 
               /// **Fila 1 - Plato del buen comer**
               Row(
@@ -96,7 +95,7 @@ void _navigateToPlatoDelBuenComer(BuildContext context) async {
                 children: [
                   _buildGameButton(
                     context,
-                    'assets/imagenes/plato_buen_comer.png',
+                    'assets/imagenes/logomemory.jpg',
                     'Memoria de cartas',
                     _navigateToVistaCartas,
                   ),
@@ -117,7 +116,7 @@ void _navigateToPlatoDelBuenComer(BuildContext context) async {
                 children: [
                   _buildGameButton(
                     context,
-                    'assets/imagenes/plato_buen_comer.png',
+                    'assets/imagenes/Quizz.jpg',
                     'Cuestionarios',
                     _navigateToCustionario,
                   ),
@@ -138,48 +137,51 @@ void _navigateToPlatoDelBuenComer(BuildContext context) async {
     );
   }
 
-  /// **Método para construir los botones con imágenes**
-  Widget _buildGameButton(
-    BuildContext context,
-    String imagePath,
-    String title,
-    Function(BuildContext) onTap,
-  ) {
-return SizedBox(
-  width: 130, // Ancho fijo para todos los botones
-  height: 150, // Alto fijo para todos los botones
-  child: OutlinedButton(
-    onPressed: () => onTap(context),
-    style: OutlinedButton.styleFrom(
-      padding: const EdgeInsets.all(10),
-      backgroundColor: const Color.fromARGB(255, 114, 181, 245),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
+Widget _buildGameButton(
+  BuildContext context,
+  String imagePath,
+  String title,
+  Function(BuildContext) onTap,
+) {
+  return SizedBox(
+    width: 130, // Ancho fijo para todos los botones
+    height: 150, // Alto fijo para todos los botones
+    child: OutlinedButton(
+      onPressed: () => onTap(context),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(10),
+        backgroundColor: const Color.fromARGB(255, 114, 181, 245),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        side: BorderSide.none,
       ),
-      side: BorderSide.none,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center, // Centrar contenido verticalmente
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(30), // 🔥 Redondea todas las imágenes
+            child: Image.asset(
+              imagePath,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover, // Ajusta la imagen sin deformarla
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+          ),
+        ],
+      ),
     ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center, // Centrar contenido verticalmente
-      children: [
-        Image.asset(
-          imagePath,
-          width: 60,
-          height: 60,
-        ),
-        const SizedBox(height: 5),
-        Text(
-          title,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-        ),
-      ],
-    ),
-  ),
-);
+  );
+}
 
-  }
 }
 

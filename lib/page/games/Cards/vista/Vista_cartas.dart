@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constantes/constants.dart';
 import '../Controladores/game_button.dart';
 import '../pages/memory_match_page.dart';
+import '../../../principal.dart';
 
 class VistaCartas extends StatefulWidget {
   const VistaCartas({super.key});
@@ -24,7 +25,14 @@ class _VistaCartasState extends State<VistaCartas> {
         title: const Text('Memory Match'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () =>
+          Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const HomePage(),
+    ),
+    (Route<dynamic> route) => false, // Esto elimina todas las vistas anteriores
+  ),
         ),
       ),
       body: Padding(

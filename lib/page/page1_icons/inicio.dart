@@ -63,35 +63,38 @@ class _InicioState extends State<Inicio> {
 
   /// Obtener noticias desde la API y guardarlas en SharedPreferences.
   Future<void> fetchNews() async {
-    try {
-      print("🔄 Llamando a la API para obtener noticias...");
-      const String apiKey = 'pub_72267535ae0cff301e7db337e6a99c7511707';
-      const String apiUrl = 'https://newsdata.io/api/1/news?country=mx&category=health&apikey=';
-      final response = await http.get(Uri.parse(apiUrl + apiKey));
+  try {
+    print("🔄 Llamando a la API para obtener noticias...");
+    const String apiKey = 'pub_72267535ae0cff301e7db337e6a99c7511707';
+    const String apiUrl = 'https://newsdata.io/api/1/news?country=mx&category=health&apikey=';
+    
+    final response = await http.get(Uri.parse(apiUrl + apiKey));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('results')) {
-          setState(() {
-            articles = data['results'];
-            isLoading = false;
-          });
+    if (response.statusCode == 200) {
+      // 🔥 Solución: Decodificar a UTF-8 manualmente
+      final String utf8Body = utf8.decode(response.bodyBytes);
+      final Map<String, dynamic> data = json.decode(utf8Body);
 
-          // Guardar en SharedPreferences
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('newsData', json.encode(articles));
-          await prefs.setInt('lastFetchTime', DateTime.now().millisecondsSinceEpoch);
-          print("✅ Noticias guardadas en SharedPreferences");
-        }
-      } else {
-        throw Exception('Error en la respuesta de la API');
+      if (data.containsKey('results')) {
+        setState(() {
+          articles = data['results'];
+          isLoading = false;
+        });
+
+        // Guardar en SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('newsData', json.encode(articles));
+        await prefs.setInt('lastFetchTime', DateTime.now().millisecondsSinceEpoch);
+        print("✅ Noticias guardadas en SharedPreferences");
       }
-    } catch (e) {
-      print('❌ Error al obtener noticias: $e');
-      setState(() => isLoading = false);
+    } else {
+      throw Exception('Error en la respuesta de la API');
     }
+  } catch (e) {
+    print('❌ Error al obtener noticias: $e');
+    setState(() => isLoading = false);
   }
-
+}
   /// Cargar datos del usuario desde Firebase Firestore
   Future<void> _loadUserData() async {
     try {

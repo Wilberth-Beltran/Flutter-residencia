@@ -45,23 +45,36 @@ class Game {
   }
 
   void onCardPressed(int index) {
-    cards[index].state = CardState.visible;
-    final List<int> visibleCardIndexes = _getVisibleCardIndexes();
-    if (visibleCardIndexes.length == 2) {
-      final CardItem card1 = cards[visibleCardIndexes[0]];
-      final CardItem card2 = cards[visibleCardIndexes[1]];
-      if (card1.value == card2.value) {
-        card1.state = CardState.guessed;
-        card2.state = CardState.guessed;
-        isGameOver = _isGameOver();
-      } else {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          card1.state = CardState.hidden;
-          card2.state = CardState.hidden;
-        });
-      }
+  final List<int> visibleCardIndexes = _getVisibleCardIndexes();
+
+  //  Verifica que no haya más de 2 cartas volteadas antes de permitir otra acción
+  if (visibleCardIndexes.length >= 2) {
+    return; // Si ya hay 2 cartas levantadas, ignorar más clics
+  }
+
+  cards[index].state = CardState.visible;
+  visibleCardIndexes.add(index);
+
+  // Esperar a que haya exactamente 2 cartas volteadas para hacer la comparación
+  if (visibleCardIndexes.length == 2) {
+    final CardItem card1 = cards[visibleCardIndexes[0]];
+    final CardItem card2 = cards[visibleCardIndexes[1]];
+
+    if (card1.value == card2.value) {
+      // ✅ Las cartas coinciden, se quedan descubiertas
+      card1.state = CardState.guessed;
+      card2.state = CardState.guessed;
+      isGameOver = _isGameOver();
+    } else {
+      //  No coinciden, ocultarlas después de 1 segundo
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        card1.state = CardState.hidden;
+        card2.state = CardState.hidden;
+      });
     }
   }
+}
+
 
   List<CardItem> _createCardItems(String imagePath, Color cardColor, int cardValue) {
     return List.generate(

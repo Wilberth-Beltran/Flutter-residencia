@@ -14,7 +14,7 @@ class ConfirmationRegistroScreen extends StatelessWidget {
       );
     });
 
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -25,8 +25,8 @@ class ConfirmationRegistroScreen extends StatelessWidget {
               color: Colors.green,
               size: 100,
             ),
-            const SizedBox(height: 20),
-            const Text(
+             SizedBox(height: 20),
+             Text(
               '¡Registro exitoso!',
               style: TextStyle(
                 fontSize: 24,
